@@ -1,48 +1,75 @@
 <template>
   <div id="app">
-    <el-container>
-      <el-main>
-        <el-tabs v-model="activeName">
-          <el-tab-pane label="Pop" name="first">
-            <Home></Home>
-          </el-tab-pane>
-          <el-tab-pane label="Search" name="second">
-            <Search></Search>
-          </el-tab-pane>
-        </el-tabs>
-      </el-main>
-    </el-container>
-
-    <!-- <el-menu :default-active="activeIndex" class="el-menu-demo" mode="horizontal">
-      <el-menu-item index="1">
-        <router-link class="font-none" to="/home">Pop</router-link>
-      </el-menu-item>
-      <el-menu-item index="2">
-        <router-link class="font-none" to="/search">Search</router-link>
-      </el-menu-item>
+    <el-menu
+      :default-active="activeIndex"
+      class="el-menu-demo"
+      mode="horizontal"
+      @select="trunMenu"
+    >
+      <el-menu-item index="1">Pop</el-menu-item>
+      <el-menu-item index="2">Search</el-menu-item>
     </el-menu>
     <div class="line"></div>
-    <router-view></router-view>-->
-    <!-- <aplayer :autoplay="true" :music="playerList" v-if="flag" :float="true" ref="player" /> -->
+    <Aplayer
+      :autoplay="true"
+      :list="playerList"
+      :music="playerMusic"
+      v-if="flag"
+      :repeat="repeat"
+      :float="true"
+      ref="player"
+    />
+    <router-view></router-view>
+    <!--  -->
   </div>
 </template>
 
 <script>
-import Home from "./views/Home";
-import Search from "./views/Search";
+import Aplayer from "vue-aplayer";
 export default {
   name: "app",
   data() {
     return {
-      activeName: "second"
+      playerList: [],
+      playerMusic: {},
+      repeat: 'repeat-all',
+      flag: false,
+      activeIndex: "2"
     };
   },
-  components: {
-    Home,
-    Search
+  computed: {
+    music: function() {
+      return this.$store.state.music;
+    },
+    musicList: function() {
+      return this.$store.state.playerList;
+    }
+  },
+  watch: {
+    music(nMusic) {
+      console.log(nMusic);
+      this.flag = true;
+      this.playerMusic = nMusic;
+    },
+    musicList(nList) {
+      this.flag = true;
+      this.playerList = nList;
+    }
   },
   methods: {
-   
+    trunMenu(e) {
+      if (e === "1") {
+        console.log(e);
+        this.$router.push("/home");
+      }
+      if (e === "2") {
+        console.log(e);
+        this.$router.push("/search");
+      }
+    }
+  },
+  components: {
+    Aplayer
   }
 };
 </script>

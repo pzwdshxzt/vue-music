@@ -1,60 +1,37 @@
 <template>
   <div>
-    <aplayer
-      :showLrc="true"
-      :autoplay="true"
-      :music="playerList"
-      v-if="flag"
-      :float="true"
-      ref="player"
-    />
     <el-table :data="tableData" @row-click="playMusic" style="width: 100%">
       <el-table-column label="专辑" width="70">
         <template slot-scope="scope">
-          <img :src="scope.row.albumurl" width="40" height="40" />
+          <img :src="scope.row.albumurl" height="40" />
         </template>
       </el-table-column>
-      <el-table-column prop="songname" label="歌名" width="150"></el-table-column>
-      <el-table-column prop="singer[0].name" label="歌手" width="150"></el-table-column>
+      <el-table-column prop="songname" label="歌名"></el-table-column>
+      <el-table-column prop="singer[0].name" label="歌手"></el-table-column>
+      <el-table-column fixed="right" label="操作" width="100">
+        <template slot-scope="scope">
+          <el-button @click="playMusic($event,scope.row)" type="primary" size="small">添加到列表</el-button>
+        </template>
+      </el-table-column>
     </el-table>
   </div>
 </template>
 <script>
-import Aplayer from "vue-aplayer";
 import utils from "../utils";
 export default {
   data() {
     return {
-      tableData: [],
-      playerList: {},
-      flag: false,
-      isFixed: false,
-      offsetTop: 0
+      tableData: []
     };
   },
-  components: {
-    Aplayer
-  },
-  mounted() {
-   
-  },
-  destroyed() {
-  
-  },
+
   methods: {
-    handleScroll() {
-      var scrollTop =
-        window.pageYOffset ||
-        document.documentElement.scrollTop ||
-        document.body.scrollTop;
-      if (scrollTop >= this.offsetTop) {
-        this.isFixed = true;
-      } else {
-        this.isFixed = false;
-      }
-    },
-    playMusic(e) {
-      this.addMusictoPlayer(e);
+    async playMusic(e,row) {
+      console.log(e)
+      // let music = await this.addMusictoPlayer(e);
+      // if (!utils.checkObj(music)) {
+      //   this.$store.dispatch("insertMusic", music);
+      // }
     },
     // 去掉歌词中的转义字符
     _normalizeLyric: function(lyric) {
@@ -97,8 +74,9 @@ export default {
         })
         .then(response => {
           lrc = that._normalizeLyric(response.lyric);
-        }).catch(() =>{
-          console.log('获取'+music.songname+'歌词失败')
+        })
+        .catch(() => {
+          console.log("获取" + music.songname + "歌词失败");
         });
       let playMusic = {
         title: music.songname,
@@ -108,9 +86,9 @@ export default {
         lrc: lrc
       };
       if (!utils.checkObj(src)) {
-        that.playerList = playMusic;
-        this.flag = true;
+        return playMusic;
       }
+      return null;
     }
   },
   created: function() {
@@ -123,5 +101,4 @@ export default {
 </script>
 
 <style >
-
 </style>

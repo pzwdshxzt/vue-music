@@ -5,14 +5,6 @@
         <el-button slot="append" @click="searchKey" icon="el-icon-search">搜索</el-button>
       </el-input>
     </div>
-    <aplayer
-      :showLrc="true"
-      :autoplay="true"
-      :music="playerList"
-      v-if="flag"
-      :float="true"
-      ref="player"
-    />
     <el-table v-if="searchFlag" :data="tableData" @row-click="playMusic" style="width: 100%">
       <el-table-column label="专辑" width="70">
         <template slot-scope="scope">
@@ -25,27 +17,19 @@
   </div>
 </template>
 <script>
-import Aplayer from "vue-aplayer";
 import utils from "../utils";
 export default {
   data() {
     return {
       key: '',
       tableData: [],
-      playerList: {},
-      flag: false,
-      isFixed: false,
       searchFlag: false,
-      offsetTop: 0
     };
-  },
-  components: {
-    Aplayer
   },
   mounted() {},
   destroyed() {},
   methods: {
-    async searchKey(e){
+    async searchKey(){
       let that = this
       if(utils.checkObj(that.key)){
          that.$notify({
@@ -68,8 +52,7 @@ export default {
         })
         .catch(() => {
           that.$notify({
-            title: "歌曲不见了",
-            message: "可以尝试搜索这个(" + music.songname + ")歌曲听歌"
+            title: "歌曲不见了"
           });
           return;
         });
@@ -141,8 +124,8 @@ export default {
         lrc: lrc
       };
       if (!utils.checkObj(src)) {
-        that.playerList = playMusic;
-        this.flag = true;
+         this.$store.dispatch('insertMusic', playMusic)
+         this.$store.dispatch('playerMusic', playMusic)
       }
     }
   },
