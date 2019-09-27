@@ -10,7 +10,7 @@
       <el-table-column prop="singer[0].name" label="歌手"></el-table-column>
       <el-table-column fixed="right" label="操作" width="100">
         <template slot-scope="scope">
-          <el-button @click="playMusic($event,scope.row)" type="primary" size="small">添加到列表</el-button>
+          <el-button @click.native="playMusic($event,scope.row)" type="primary" size="small">添加到列表</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -27,11 +27,11 @@ export default {
 
   methods: {
     async playMusic(e,row) {
-      console.log(e)
-      // let music = await this.addMusictoPlayer(e);
-      // if (!utils.checkObj(music)) {
-      //   this.$store.dispatch("insertMusic", music);
-      // }
+      e.stopPropagation()
+      let music = await this.addMusictoPlayer(row);
+      if (!utils.checkObj(music)) {
+        this.$store.dispatch("insertMusic", music);
+      }
     },
     // 去掉歌词中的转义字符
     _normalizeLyric: function(lyric) {
