@@ -32,7 +32,7 @@ export default {
     return {
       playerList: [],
       playerMusic: {},
-      repeat: 'repeat-all',
+      repeat: "repeat-all",
       flag: false,
       activeIndex: "2"
     };
@@ -47,7 +47,6 @@ export default {
   },
   watch: {
     music(nMusic) {
-      console.log(nMusic);
       this.flag = true;
       this.playerMusic = nMusic;
     },
@@ -58,13 +57,12 @@ export default {
   },
   methods: {
     trunMenu(e) {
-      if (e === "1") {
-        console.log(e);
-        this.$router.push("/home");
+      let path = this.$route.path
+      if (e === "1" && path !== '/home') {
+          this.$router.push("/home");
       }
-      if (e === "2") {
-        console.log(e);
-        this.$router.push("/search");
+      if (e === "2" && path !== '/search') {
+          this.$router.push("/search");
       }
     }
   },

@@ -13,6 +13,11 @@
       </el-table-column>
       <el-table-column prop="songname" label="歌名" width="150"></el-table-column>
       <el-table-column prop="singer[0].name" label="歌手" width="150"></el-table-column>
+      <el-table-column fixed="right" label="操作" width="100">
+        <template slot-scope="scope">
+          <el-button @click.native="addMusic($event,scope.row)" type="primary" size="small">添加到列表</el-button>
+        </template>
+      </el-table-column>
     </el-table>
   </div>
 </template>
@@ -21,23 +26,38 @@ import utils from "../utils";
 export default {
   data() {
     return {
-      key: '',
+      key: "",
       tableData: [],
-      searchFlag: false,
+      searchFlag: false
     };
   },
   mounted() {},
   destroyed() {},
   methods: {
-    async searchKey(){
-      let that = this
-      if(utils.checkObj(that.key)){
-         that.$notify({
-            title: "输入值不能为空"
-          });
-        return
+    async addMusic(e,row) {
+      e.stopPropagation()
+      let music = await this.addMusictoPlayer(row);
+      if (!utils.checkObj(music)) {
+        this.$store.dispatch("insertMusic", music);
       }
-    await that
+    },
+    async playMusic(row) {
+      console.log(row)
+      let music = await this.addMusictoPlayer(row);
+      if (!utils.checkObj(music)) {
+        this.$store.dispatch("playerMusic", music);
+        this.$store.dispatch("insertMusic", music);
+      }
+    },
+    async searchKey() {
+      let that = this;
+      if (utils.checkObj(that.key)) {
+        that.$notify({
+          title: "输入值不能为空"
+        });
+        return;
+      }
+      await that
         .$fetch("/music/search", {
           params: {
             key: that.key,
@@ -46,9 +66,8 @@ export default {
           }
         })
         .then(response => {
-           console.log(response)
-           that.tableData = response;
-           that.searchFlag = true
+          that.tableData = response;
+          that.searchFlag = true;
         })
         .catch(() => {
           that.$notify({
@@ -56,7 +75,6 @@ export default {
           });
           return;
         });
-
     },
     handleScroll() {
       var scrollTop =
@@ -68,9 +86,6 @@ export default {
       } else {
         this.isFixed = false;
       }
-    },
-    async playMusic(e) {
-      await this.addMusictoPlayer(e);
     },
     // 去掉歌词中的转义字符
     _normalizeLyric: function(lyric) {
@@ -113,8 +128,9 @@ export default {
         })
         .then(response => {
           lrc = that._normalizeLyric(response.lyric);
-        }).catch(() =>{
-          console.log('获取'+music.songname+'歌词失败')
+        })
+        .catch(() => {
+          console.log("获取" + music.songname + "歌词失败");
         });
       let playMusic = {
         title: music.songname,
@@ -124,9 +140,9 @@ export default {
         lrc: lrc
       };
       if (!utils.checkObj(src)) {
-         this.$store.dispatch('insertMusic', playMusic)
-         this.$store.dispatch('playerMusic', playMusic)
+        return playMusic;
       }
+      return null;
     }
   },
   created: function() {}

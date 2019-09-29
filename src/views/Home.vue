@@ -10,7 +10,7 @@
       <el-table-column prop="singer[0].name" label="歌手"></el-table-column>
       <el-table-column fixed="right" label="操作" width="100">
         <template slot-scope="scope">
-          <el-button @click.native="playMusic($event,scope.row)" type="primary" size="small">添加到列表</el-button>
+          <el-button @click.native="addMusic($event,scope.row)" type="primary" size="small">添加到列表</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -26,10 +26,17 @@ export default {
   },
 
   methods: {
-    async playMusic(e,row) {
+     async addMusic(e,row) {
       e.stopPropagation()
       let music = await this.addMusictoPlayer(row);
       if (!utils.checkObj(music)) {
+        this.$store.dispatch("insertMusic", music);
+      }
+    },
+    async playMusic(row) {
+      let music = await this.addMusictoPlayer(row);
+      if (!utils.checkObj(music)) {
+        this.$store.dispatch("playerMusic", music);
         this.$store.dispatch("insertMusic", music);
       }
     },
